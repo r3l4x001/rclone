@@ -3,6 +3,7 @@ package mounttest
 import (
 	"testing"
 
+	"github.com/ncw/rclone/fs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -69,6 +70,13 @@ func TestWriteFileOverwrite(t *testing.T) {
 // NB the code for this is in file.go rather than write.go
 func TestWriteFileFsync(t *testing.T) {
 	run.skipIfNoFUSE(t)
+
+	// Set duperdebug
+	oldLogLevel := fs.Config.LogLevel
+	fs.Config.LogLevel = fs.LogLevelDebug
+	defer func() {
+		fs.Config.LogLevel = oldLogLevel
+	}()
 
 	filepath := run.path("to be synced")
 	fd, err := osCreate(filepath)
